@@ -35,8 +35,8 @@ app.post('/create-checkout-session', async (req, res) => {
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
-      success_url: 'https://shoppingbackend-ivrt.onrender.com/success',
-      cancel_url: 'https://shoppingbackend-ivrt.onrender.com/',
+      success_url: 'https://shoppingfrontend-vhf1.onrender.com/success',
+      cancel_url: 'https://shoppingfrontend-vhf1.onrender.com/',
     });
 
     res.json({ id: session.id });
