@@ -19,32 +19,35 @@ app.get('/', (req, res) => {
 });
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.post('/create-checkout-session', async (req, res) => {
-  try {
-    const { items } = req.body;
+  const { items } = req.body;
 
-    const line_items = items.map(item => ({
-      price_data: {
-        currency: 'usd',
-        product_data: { name: item.name },
-        unit_amount: Math.round(item.price * 100), // in cents
+  const line_items = items.map((item) => ({
+    price_data: {
+      currency: 'usd',
+      product_data: {
+        name: item.name,
       },
-      quantity: item.qty,
-    }));
+      unit_amount: Math.round(item.price * 100), // Stripe expects cents
+    },
+    quantity: item.qty,
+  }));
 
+  try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items,
       mode: 'payment',
       success_url: 'https://shoppingfrontend-vhf1.onrender.com/success',
-      cancel_url: 'https://shoppingfrontend-vhf1.onrender.com/',
+      cancel_url: 'https://shoppingfrontend-vhf1.onrender.com/cart',
     });
 
     res.json({ id: session.id });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Something went wrong' });
+  } catch (error) {
+    console.error('Stripe Error:', error.message);
+    res.status(500).json({ error: error.message });
   }
 });
+
 
 
 app.use('/api/auth', require('./routes/authRoutes'));
